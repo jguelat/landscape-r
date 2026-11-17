@@ -31,7 +31,7 @@ library(tinytable)
 
 # Preface {.unnumbered}
 
-Short intro...
+Understanding how organisms react to landscape and habitat structure is a key problem in ecology. It is thus important to know how to quantify and describe landscape patterns. This has motivated the development of hundreds of indices, especially in landscape ecology. Ecologists often used FRAGSTATS to compute such indices using land use or land cover (often abbreviated with LULC) gridded data sets. Unfortunately, FRAGSTATS is not an open source software, and its graphical user interface is not very adapted for reproducible workflows. Fortunately, it is now possible to compute many of these indices with R using the landscapemetrics package.
 
 The first version of this tutorial was created for a course given at the [Swiss Ornithological Institute](https://www.vogelwarte.ch/en){target="_blank"} in 2026. Researchers and students in ecology were the original audience but the whole material can be used by anybody who wants to learn more about how to perform these techniques.
 
@@ -49,7 +49,7 @@ Please also update to the latest version of R, otherwise you may get packages th
 ```{r}
 #| echo: false
 #| output: asis
-packages <- c("terra", "landscapemetrics")
+packages <- c("terra", "landscapemetrics", "motif")
 
 cat("``` r", paste0('install.packages(','"', packages, '"', ')'), "```", sep = "\n")
 ```
