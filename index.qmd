@@ -1,0 +1,97 @@
+---
+author:
+  - name: Jérôme Guélat
+    degrees: PhD
+    orcid: 0000-0003-1438-4378
+    affiliation:
+      - name: Swiss Ornithological Institute
+        url: https://www.vogelwarte.ch/en
+
+keywords:
+  - GIS
+  - R Spatial
+  - Spatial analyses
+  - Landscape ecology
+  - Raster data
+  - Landuse/landcover
+
+title-block-banner: "#5374a5"
+title-block-banner-color: white
+
+toc: true
+toc-depth: 3
+toc-title: ""
+---
+
+```{r}
+#| echo: false
+#| output: false
+library(tinytable)
+```
+
+# Preface {.unnumbered}
+
+The first version of this tutorial was created for a course given at the [Swiss Ornithological Institute](https://www.vogelwarte.ch/en){target="_blank"} in 2026.
+
+None of this could have been written without the incredible work done by the R-spatial community. I'd especially like to thank all the software developers who created and are maintaining the R software, the R packages and the open-source libraries used in these packages!
+
+
+# Getting ready {.unnumbered}
+
+You'll need the following packages to run the examples in this book. You can use the following code to install them. All the required dependencies will be automatically installed.
+
+::: callout-important
+Please also update to the latest version of R, otherwise you may get packages that are not fully up-to-date.
+:::
+
+```{r}
+#| echo: false
+#| output: asis
+packages <- c("terra", "landscapemetrics")
+
+cat("``` r", paste0('install.packages(','"', packages, '"', ')'), "```", sep = "\n")
+```
+
+The required data is available on the GitHub repository (<https://github.com/jguelat/landscape-r>{target="_blank"}). You'll also find all the code needed to re-create the whole book.
+
+
+# Changelog {.unnumbered}
+
+Only the big updates are listed here.
+
+| | |
+|------------|------------|
+| 2026-12-02 | First version of the tutorial for the course in Sempach |
+| 2026-11-17 | First commit |
+
+
+# R and packages versions {.unnumbered}
+
+To create this book, the following R version was used:
+
+```{r}
+#| eval: false
+R.version
+```
+
+```{r}
+#| echo: false
+Rversion <- sapply(R.version, function(x) {x[1]})
+Rversion <- data.frame(names(Rversion), Rversion, row.names = NULL)
+names(Rversion) <- NULL
+#print(Rversion, row.names = FALSE, right = FALSE)
+format_tt(tt(Rversion, width = c(1, 2)), quarto = TRUE)
+```
+\
+
+And the following packages (the dependencies are not listed):
+
+```{r}
+#| echo: false
+packages <- sort(packages)
+versions <- sapply(packages, function(x) {as.character(packageVersion(x))})
+
+packagesData <- data.frame(Package = packages, Version = versions, row.names = NULL)
+#print(packagesData, row.names = FALSE, right = FALSE)
+format_tt(tt(packagesData, width = c(1, 2)), quarto = TRUE) |> style_tt(i = 1:nrow(packagesData), j = 1, monospace = TRUE)
+```
