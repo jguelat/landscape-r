@@ -1,0 +1,21 @@
+---
+toc: true
+toc-depth: 3
+toc-title: ""
+---
+
+```{r}
+#| echo: false
+#| output: false
+set.seed(55)
+if (.Platform$OS.type == "windows" && Sys.getenv("PROJ_LIB") != ""){
+  Sys.setenv(PROJ_LIB = "")
+}
+library(terra)
+```
+
+# Landscape indices
+
+## Introduction
+
+Bla bla bla
