@@ -12,8 +12,8 @@ keywords:
   - R Spatial
   - Spatial analyses
   - Landscape ecology
-  - Raster data
-  - Landuse/landcover
+  - Landuse
+  - Landcover
 
 title-block-banner: "#5374a5"
 title-block-banner-color: white
@@ -31,7 +31,9 @@ library(tinytable)
 
 # Preface {.unnumbered}
 
-The first version of this tutorial was created for a course given at the [Swiss Ornithological Institute](https://www.vogelwarte.ch/en){target="_blank"} in 2026.
+Short intro...
+
+The first version of this tutorial was created for a course given at the [Swiss Ornithological Institute](https://www.vogelwarte.ch/en){target="_blank"} in 2026. Researchers and students in ecology were the original audience but the whole material can be used by anybody who wants to learn more about how to perform these techniques.
 
 None of this could have been written without the incredible work done by the R-spatial community. I'd especially like to thank all the software developers who created and are maintaining the R software, the R packages and the open-source libraries used in these packages!
 
