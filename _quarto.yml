@@ -1,0 +1,33 @@
+project:
+  type: book
+
+book:
+  title: "Characterizing landscapes using landscape ecology indices"
+  author: "Jérôme Guélat"
+  date: today
+  chapters:
+    - index.qmd
+    - raster_intro.qmd
+    - landscape_indices.qmd
+    - more_help.qmd
+  sidebar:
+    tools:
+      - icon: github
+        href: https://github.com/jguelat/landscape-r
+  #repo-url: https://github.com/quarto-dev/quarto-demo
+  #repo-actions: [edit, source, issue]
+  page-footer:
+    center: "Copyright 2026, Jérôme Guélat"
+    border: true
+  license: "CC BY-NC-ND 4.0"
+
+format:
+  html:
+    theme: cosmo
+    grid: 
+      sidebar-width: 250px
+      body-width: 1000px
+      margin-width: 250px
+      gutter-width: 1.5rem
+
+css: styles.css
