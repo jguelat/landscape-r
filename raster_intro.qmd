@@ -28,3 +28,60 @@ Raster data sets can sometimes have several bands. You can think of raster bands
 
 
 ## Raster data in R
+
+We will use the `terra` package to work with raster data. This package has everything needed to import, analyse, visualize and export raster data sets. It is using the GDAL library for the import/export operations, which means it can open almost every raster data format. The `terra` functions will usually not import the full data sets in memory but only create a pointer to the data and then read smaller blocks of data successively. This allows working with very large rasters with a relatively small memory footprint. The `terra` package stores raster data inside objects called `SpatRaster`. The amount of functions available in the `terra` package is similar to typical GIS software.
+
+::: {.callout-important title="Rasters and R workspaces"}
+It is important to remember that the standard `terra` objects only store a pointer to the data (actually, they hold a pointer to an underlying C++ object that lives in the memory of the R session). This means the actual data set will not be included if you save your session in an R workspace (.Rdata files). If you really want to include it in your workspace, you can use the `wrap()` function. Note that this is also needed if you want to pass `terra` objects over a connection that serializes, e.g. to a computer cluster. For more details on parallel computing using `terra`, check <https://rspatial.org/pkg/10-parallel.html>{target="_blank"}.
+:::
+
+There is another famous R package to process raster data, the `stars` package. It is especially useful if you need to work with "irregular" rasters (sheared, curvilinear, etc.) or with complex datacubes. It is also tidyverse-friendly and the syntax is similar to the one used in `sf` (another R package used to work with GS vector data). However the number of available functions is much lower than in `terra`. If you need to use both packages, it is fortunately easy to convert raster objects from `terra` to `stars` (using the function `st_as_stars()`), and the other way round (using the function `rast()`).
+
+
+## Reading and writing raster data
+
+To import a raster data set using `terra`, we're going to use the `rast()` function. It doesn't matter if our raster is continuous, discrete, or contains several bands, the `rast()` function will create the correct `terra` object for us. Calling the object will display some basic information about the data set. However don't forget that it's only a pointer to the data set, the full raster will not be imported into memory.
+
+The following raster is a typical land use/land cover dataset. It is an extract from the [Swiss Land Use Statistics](https://statistik.admin.ch/en/understanding-data-statistics/surveys/area){target="_blank"}, provided by the Federal Statistical Office. Note that `terra` is not recognizing automatically that we're processing a discrete raster. That's why we need to use the `as.factor()` function.
+
+```{r}
+landcover <- rast("data/landcover.tif")
+landcover
+landcover <- as.factor(landcover)
+plot(landcover)
+```
+
+```{r}
+ncell(landcover)
+dim(landcover)
+ext(landcover)
+c(xmin(landcover), xmax(landcover), ymin(landcover), ymax(landcover))
+res(landcover)
+```
+
+Table with pixel values: https://statistik.admin.ch/en/asset/171190
+Complete description: https://statistik.admin.ch/de/daten-statistiken-verstehen/nomenklaturen/arealstatistik/noas2004
+Compte description PDF (only german and french): https://statistik.admin.ch/de/asset/6948898
+
+Exporting a raster data set is really easy thanks to the `writeRaster()` function. The format will be automatically recognized based on the file name extension. Don't worry too much about this, the GeoTIFF format is almost always the format we should use. If your raster object has several bands, all of them will be exported in the same GeoTIFF file.
+
+```{r}
+#| eval: false
+writeRaster(landcover, "export/landcover_export.tif")
+```
+
+
+## Summarize rasters
+
+For discrete rasters, you can easily get the frequency distribution of all the available categories.
+
+```{r}
+freq(landcover)
+barplot(landcover)
+```
+
+
+## Binarize rasters
+
+
+## Landcover proportions aggregation vs.focal
