@@ -18,6 +18,6 @@ library(terra)
 
 ## Introduction
 
-Focal with proportion/mode
 Patch/class/landscape
 Buffers with multiple sizes
+Focal indices
