@@ -1,0 +1,112 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Characterizing landscapes using landscape ecology indices",
+    "section": "",
+    "text": "Preface\nUnderstanding how organisms react to landscape and habitat structure is a key problem in ecology. It is thus important to know how to quantify and describe landscape patterns. This has motivated the development of hundreds of indices, especially in landscape ecology. Ecologists often used FRAGSTATS to compute such indices using land use or land cover (often abbreviated with LULC) gridded data sets. Unfortunately, FRAGSTATS is not an open source software, and its graphical user interface is not very adapted for reproducible workflows. Fortunately, it is now possible to compute many of these indices with R using the landscapemetrics package. The goal of this tutorial is to show how to get basic information on LULC rasters and how to compute the most common landscape ecology indices.\nThe first version of this tutorial was created for a course given at the Swiss Ornithological Institute in 2026. Researchers and students in ecology were the original audience but the whole material can be used by anybody who wants to learn more about how to perform these techniques.\nNone of this could have been written without the incredible work done by the R-spatial community. I’d especially like to thank all the software developers who created and are maintaining the R software, the R packages and the open-source libraries used in these packages!\n\n\nGetting ready\nYou’ll need the following packages to run the examples in this book. You can use the following code to install them. All the required dependencies will be automatically installed.\n\n\n\n\n\n\nImportant\n\n\n\nPlease also update to the latest version of R, otherwise you may get packages that are not fully up-to-date.\n\n\ninstall.packages(\"terra\")\ninstall.packages(\"landscapemetrics\")\ninstall.packages(\"motif\")\nThe required data is available on the GitHub repository (https://github.com/jguelat/landscape-r). You’ll also find all the code needed to re-create the whole book.\n\n\nChangelog\nOnly the big updates are listed here.\n\n\n\n2026-12-02\nFirst version of the tutorial for the course in Sempach\n\n\n2026-11-17\nFirst commit\n\n\n\n\n\nR and packages versions\nTo create this book, the following R version was used:\n\nR.version\n\n\n\n\n\n    \n\n    \n    \n    \n      \n\n\n\nplatform\nx86_64-w64-mingw32\n\n\narch\nx86_64\n\n\nos\nmingw32\n\n\ncrt\nucrt\n\n\nsystem\nx86_64, mingw32\n\n\nstatus\n\n\n\nmajor\n4\n\n\nminor\n5.3\n\n\nyear\n2026\n\n\nmonth\n03\n\n\nday\n11\n\n\nsvn rev\n89597\n\n\nlanguage\nR\n\n\nversion.string\nR version 4.5.3 (2026-03-11 ucrt)\n\n\nnickname\nReassured Reassurer\n\n\n\n\n    \n\n\n\n\n\nAnd the following packages (the dependencies are not listed):\n\n\n\n\n    \n\n    \n    \n    \n      \n\n\n\nPackage\nVersion\n\n\n\n\nlandscapemetrics\n2.2.1\n\n\nmotif\n0.6.5\n\n\nterra\n1.9.50",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "raster_intro.html",
+    "href": "raster_intro.html",
+    "title": "1  Raster data",
+    "section": "",
+    "text": "1.1 Raster data model\nA raster data set is basically an image, which is the same as a grid of pixels. These pixels are often called cells. Most raster data sets you will encounter will have square (or maybe rectangular) cells with a constant size, also called resolution, and we will only focus on these in this tutorial. However don’t forget that other kind of grids, for example sheared or curvilinear ones, also exist. This is sometimes needed depending on the coordinate reference system used to store the data, or can be caused by some reprojections.\nFor this tutorial, we will focus on rasters containing discrete values. The content of each cell describes the dominant category of land use or land cover. However, rasters are also commonly used to store continuous values. Digital elevation models are a typical example of such data, each cell is used to store an elevation value. Continuous rasters can also be used to characterize landscapes and habitats, for example by storing the percentage of forest cover in each cell.\nRaster data sets can sometimes have several bands. You can think of raster bands as different layers of the same grid, each layer containing a different information. This is mainly use for spectral data, for example the red, green and blue intensity values in an aerial picture; satellite imagery will have even more bands depending on the number of sensors. Multiband rasters are also often used to store environment variables that change through time (e.g. a temperature raster, with one band per day). Such rasters are often called datacubes.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Raster data</span>"
+    ]
+  },
+  {
+    "objectID": "raster_intro.html#raster-data-in-r",
+    "href": "raster_intro.html#raster-data-in-r",
+    "title": "1  Raster data",
+    "section": "1.2 Raster data in R",
+    "text": "1.2 Raster data in R\nWe will use the terra package to work with raster data. This package has everything needed to import, analyse, visualize and export raster data sets. It is using the GDAL library for the import/export operations, which means it can open almost every raster data format. The terra functions will usually not import the full data sets in memory but only create a pointer to the data and then read smaller blocks of data successively. This allows working with very large rasters with a relatively small memory footprint. The terra package stores raster data inside objects called SpatRaster. The amount of functions available in the terra package is similar to typical GIS software.\n\n\n\n\n\n\nImportantRasters and R workspaces\n\n\n\nIt is important to remember that the standard terra objects only store a pointer to the data (actually, they hold a pointer to an underlying C++ object that lives in the memory of the R session). This means the actual data set will not be included if you save your session in an R workspace (.Rdata files). If you really want to include it in your workspace, you can use the wrap() function. Note that this is also needed if you want to pass terra objects over a connection that serializes, e.g. to a computer cluster. For more details on parallel computing using terra, check https://rspatial.org/pkg/10-parallel.html.\n\n\nThere is another famous R package to process raster data, the stars package. It is especially useful if you need to work with “irregular” rasters (sheared, curvilinear, etc.) or with complex datacubes. It is also tidyverse-friendly and the syntax is similar to the one used in sf (another R package used to work with GS vector data). However the number of available functions is much lower than in terra. If you need to use both packages, it is fortunately easy to convert raster objects from terra to stars (using the function st_as_stars()), and the other way round (using the function rast()).",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Raster data</span>"
+    ]
+  },
+  {
+    "objectID": "raster_intro.html#reading-raster-data",
+    "href": "raster_intro.html#reading-raster-data",
+    "title": "1  Raster data",
+    "section": "1.3 Reading raster data",
+    "text": "1.3 Reading raster data\nTo import a raster data set using terra, we’re going to use the rast() function. It doesn’t matter if our raster is continuous, discrete, or contains several bands, the rast() function will create the correct terra object for us. Calling the object will display some basic information about the data set. However don’t forget that it’s only a pointer to the data set, the full raster will not be imported into memory.\nThe following raster is a typical land use/land cover dataset. It is an extract from the Swiss Land Use Statistics, provided by the Federal Statistical Office. Note that terra is not recognizing automatically that we’re processing a categorical raster. That’s why we need to use the as.factor() function.\n\nlandcover &lt;- rast(\"data/landcover_4.tif\")\nlandcover\n\nclass       : SpatRaster\nsize        : 151, 210, 1  (nrow, ncol, nlyr)\nresolution  : 100, 100  (x, y)\nextent      : 2644000, 2665000, 1212900, 1228000  (xmin, xmax, ymin, ymax)\ncoord. ref. : CH1903+ / LV95 (EPSG:2056)\nsource      : landcover_4.tif\nname        : landcover_4\n\nlandcover &lt;- as.factor(landcover)\nplot(landcover)\n\n\n\n\n\n\n\n\nThe values contained in a raster are always numeric, even for categorical data sets. Data providers must thus find a efficient way to encode the information they want to share using only numbers. With land use and land cover data sets, you’ll often find integer values used to represent categories. The values used in the Swiss Land Use Statistics are summarized in the following PDF document: https://statistik.admin.ch/en/asset/171190. You’ll find a more complete description of all the available categories there and there (only in German and French).\nWe’re currently using the least detailed data set with only 4 categories. In this data set, 1 is used for settlements and urban areas, 2 for agricultural areas, 3 for forests and 4 for unproductive areas. We can use the levels() function to add this information to our imported raster. After that we can easily query the categories using the cats() function.\n\ndf_levels &lt;- data.frame(id = 1:4, cover = c(\"settlement\", \"agriculture\", \"forest\", \"unproductive\"))\nlevels(landcover) &lt;- df_levels\nplot(landcover)\n\n\n\n\n\n\n\ncats(landcover)\n\n[[1]]\n  id        cover\n1  1   settlement\n2  2  agriculture\n3  3       forest\n4  4 unproductive",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Raster data</span>"
+    ]
+  },
+  {
+    "objectID": "raster_intro.html#writing-raster-data",
+    "href": "raster_intro.html#writing-raster-data",
+    "title": "1  Raster data",
+    "section": "1.4 Writing raster data",
+    "text": "1.4 Writing raster data\nExporting a raster data set is really easy thanks to the writeRaster() function. The format will be automatically recognized based on the file name extension. Don’t worry too much about this, the GeoTIFF format is almost always the format we should use. If your raster object has several bands, all of them will be exported in the same GeoTIFF file. A lossless compression (LZW) will be applied by default.\n\nwriteRaster(landcover, \"export/landcover_export.tif\")",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Raster data</span>"
+    ]
+  },
+  {
+    "objectID": "raster_analysis.html",
+    "href": "raster_analysis.html",
+    "title": "2  Raster analysis",
+    "section": "",
+    "text": "2.1 Basic raster properties\nUsing standard functions available in terra, we can easily get general information about our raster, such as the number of cells, the dimension, the extent or the spatial resolution.\nncell(landcover)\n\n[1] 31710\n\ndim(landcover)\n\n[1] 151 210   1\n\next(landcover)\n\nSpatExtent : 2644000, 2665000, 1212900, 1228000 (xmin, xmax, ymin, ymax)\n\nc(xmin(landcover), xmax(landcover), ymin(landcover), ymax(landcover))\n\n[1] 2644000 2665000 1212900 1228000\n\nres(landcover)\n\n[1] 100 100",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Raster analysis</span>"
+    ]
+  },
+  {
+    "objectID": "raster_analysis.html#summarizing-rasters",
+    "href": "raster_analysis.html#summarizing-rasters",
+    "title": "2  Raster analysis",
+    "section": "2.2 Summarizing rasters",
+    "text": "2.2 Summarizing rasters\nFor discrete rasters, you can easily get the frequency distribution of all the available categories.\n\nfreq(landcover)\n\n  layer        value count\n1     1   settlement  4470\n2     1  agriculture 20217\n3     1       forest  5048\n4     1 unproductive  1975\n\nbarplot(landcover)",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Raster analysis</span>"
+    ]
+  },
+  {
+    "objectID": "raster_analysis.html#raster-binarization",
+    "href": "raster_analysis.html#raster-binarization",
+    "title": "2  Raster analysis",
+    "section": "2.3 Raster binarization",
+    "text": "2.3 Raster binarization\n\nlandcover_layers &lt;- segregate(landcover)\nnames(landcover_layers) &lt;- c(\"settlement\", \"agriculture\", \"forest\", \"unproductive\")\nplot(landcover_layers)",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Raster analysis</span>"
+    ]
+  },
+  {
+    "objectID": "raster_analysis.html#computing-landcover-proportions",
+    "href": "raster_analysis.html#computing-landcover-proportions",
+    "title": "2  Raster analysis",
+    "section": "2.4 Computing landcover proportions",
+    "text": "2.4 Computing landcover proportions\n\nlandcover_agg &lt;- aggregate(landcover_layers, 10, fun = function(i) {sum(i) / 100})\nplot(landcover_agg)\n\n\n\n\n\n\n\n\nUntil now we saw examples of global, zonal and local analyses with raster data. Now we’re going to dive in the beautiful world of focal analyses. Note that people doing data science and mathematics will usually use the word convolution instead. Focal means that we’re not only considering the pixel value, but also the values of the neighboring pixels. The neighborhood is called kernel or moving window and is usually a square (like a 3x3 square, the focal pixel and its 8 neighbors) or a circle. Once the neighborhood is defined, we perform an aggregation of the pixel values (e.g. by summing or averaging) within the neighborhood and store the output as the new value for the focal cell, and then we move the window to the next pixel. The following figure shows a example using a 3x3 moving window and the minimum as the aggregating function.\n\nNote that the output raster will usually be smaller than the original one (if the moving window is a \\(m\\)x\\(n\\) matrix, the output will have \\((m-1)\\) less rows and \\((n-1)\\) less columns). If you want a raster with the same size as the original, you’ll need to ignore the NA values, hence the window will be smaller in the margins of the raster.`\nFocal analyses are really interesting to characterize the habitat of a site since you also get information about the neighboring areas. Using a discrete raster we can for example compute the number of pixels for each landcover classes in the neighborhood of each pixel. Note that the size of the moving window has to be an odd number.\n\nlandcover_focal &lt;- focal(landcover_layers, 5, fun = \"sum\")\nplot(landcover_focal)",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Raster analysis</span>"
+    ]
+  },
+  {
+    "objectID": "landscape_indices.html",
+    "href": "landscape_indices.html",
+    "title": "3  Landscape indices",
+    "section": "",
+    "text": "3.1 Introduction\nPatch/class/landscape Buffers with multiple sizes Focal indices",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Landscape indices</span>"
+    ]
+  },
+  {
+    "objectID": "more_help.html",
+    "href": "more_help.html",
+    "title": "4  More help",
+    "section": "",
+    "text": "Bla bla bla",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>More help</span>"
+    ]
+  }
+]
