@@ -38,11 +38,11 @@ It is important to remember that the standard `terra` objects only store a point
 There is another famous R package to process raster data, the `stars` package. It is especially useful if you need to work with "irregular" rasters (sheared, curvilinear, etc.) or with complex datacubes. It is also tidyverse-friendly and the syntax is similar to the one used in `sf` (another R package used to work with GS vector data). However the number of available functions is much lower than in `terra`. If you need to use both packages, it is fortunately easy to convert raster objects from `terra` to `stars` (using the function `st_as_stars()`), and the other way round (using the function `rast()`).
 
 
-## Reading and writing raster data
+## Reading raster data
 
 To import a raster data set using `terra`, we're going to use the `rast()` function. It doesn't matter if our raster is continuous, discrete, or contains several bands, the `rast()` function will create the correct `terra` object for us. Calling the object will display some basic information about the data set. However don't forget that it's only a pointer to the data set, the full raster will not be imported into memory.
 
-The following raster is a typical land use/land cover dataset. It is an extract from the [Swiss Land Use Statistics](https://statistik.admin.ch/en/understanding-data-statistics/surveys/area){target="_blank"}, provided by the Federal Statistical Office. Note that `terra` is not recognizing automatically that we're processing a discrete raster. That's why we need to use the `as.factor()` function.
+The following raster is a typical land use/land cover dataset. It is an extract from the [Swiss Land Use Statistics](https://statistik.admin.ch/en/understanding-data-statistics/surveys/area){target="_blank"}, provided by the Federal Statistical Office. Note that `terra` is not recognizing automatically that we're processing a categorical raster. That's why we need to use the `as.factor()` function.
 
 ```{r}
 landcover <- rast("data/landcover_4.tif")
@@ -51,6 +51,10 @@ landcover <- as.factor(landcover)
 plot(landcover)
 ```
 
+The values contained in a raster are always numeric, even for categorical data sets. Data providers must thus find a efficient way to encode the information they want to share using only numbers. With land use and land cover data sets, you'll often find integer values used to represent categories. The values used in the Swiss Land Use Statistics are summarized in the following PDF document: <https://statistik.admin.ch/en/asset/171190>{target="_blank"}. You'll find a more complete description of all the available categories [there](https://statistik.admin.ch/de/daten-statistiken-verstehen/nomenklaturen/arealstatistik/noas2004){target="_blank"} and [there](https://statistik.admin.ch/de/asset/6948898){target="_blank"} (only in German and French).
+
+We're currently using the least detailed data set with only 4 categories. In this data set, 1 is used for settlements and urban areas, 2 for agricultural areas, 3 for forests and 4 for unproductive areas. We can use the `levels()` function to add this information to our imported raster. After that we can easily query the categories using the `cats()` function.
+
 ```{r}
 df_levels <- data.frame(id = 1:4, cover = c("settlement", "agriculture", "forest", "unproductive"))
 levels(landcover) <- df_levels
@@ -58,19 +62,10 @@ plot(landcover)
 cats(landcover)
 ```
 
-```{r}
-ncell(landcover)
-dim(landcover)
-ext(landcover)
-c(xmin(landcover), xmax(landcover), ymin(landcover), ymax(landcover))
-res(landcover)
-```
 
-Table with pixel values: https://statistik.admin.ch/en/asset/171190
-Complete description: https://statistik.admin.ch/de/daten-statistiken-verstehen/nomenklaturen/arealstatistik/noas2004
-Compte description PDF (only german and french): https://statistik.admin.ch/de/asset/6948898
+## Writing raster data
 
-Exporting a raster data set is really easy thanks to the `writeRaster()` function. The format will be automatically recognized based on the file name extension. Don't worry too much about this, the GeoTIFF format is almost always the format we should use. If your raster object has several bands, all of them will be exported in the same GeoTIFF file.
+Exporting a raster data set is really easy thanks to the `writeRaster()` function. The format will be automatically recognized based on the file name extension. Don't worry too much about this, the GeoTIFF format is almost always the format we should use. If your raster object has several bands, all of them will be exported in the same GeoTIFF file. A lossless compression (LZW) will be applied by default.
 
 ```{r}
 #| eval: false
