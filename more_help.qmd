@@ -8,6 +8,8 @@ toc-title: ""
 
 If you need more help, documentation, code examples, you should have a look at the `terra` documentation (<https://rspatial.org>{target="_blank"}) and the `landscapemetrics` website (<https://r-spatialecology.github.io/landscapemetrics/>{target="_blank"}).
 
+The `lanscapemetrics` paper is also providing plenty of useful information: <https://doi.org/10.1111/ecog.04617>{target="_blank"}.
+
 Jakub Nowosad, one the developers of `landscapemetrics` and the main developer of `motif`, wrote some interesting blog posts on this topic: <https://jakubnowosad.com/posts.html>{target="_blank"}.
 
 Paige Wirth, from the SILVIS Lab (University of Wisconsin–Madison), has a great video tutorial on landscape ecology indices and `landscapemetrics`: <https://www.youtube.com/watch?v=WdqLMaCesjM>{target="_blank"}.
