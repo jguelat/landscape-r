@@ -104,7 +104,7 @@
     "href": "more_help.html",
     "title": "4  More help",
     "section": "",
-    "text": "Bla bla bla",
+    "text": "If you need more help, documentation, code examples, you should have a look at the terra documentation (https://rspatial.org) and the landscapemetrics website (https://r-spatialecology.github.io/landscapemetrics/).\nJakub Nowosad, one the developers of landscapemetrics and the main developer of motif, wrote some interesting blog posts on this topic: https://jakubnowosad.com/posts.html.\nPaige Wirth, from the SILVIS Lab (University of Wisconsin–Madison), has a great video tutorial on landscape ecology indices and landscapemetrics: https://www.youtube.com/watch?v=WdqLMaCesjM.\nThe FRAGSTATS documentation can also be interesting since it provides more information on several landscape ecology concepts and a complete description of all the available metrics: https://www.fragstats.org/index.php/documentation.",
     "crumbs": [
       "<span class='chapter-number'>4</span>  <span class='chapter-title'>More help</span>"
     ]
