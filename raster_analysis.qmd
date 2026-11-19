@@ -12,11 +12,25 @@ if (.Platform$OS.type == "windows" && Sys.getenv("PROJ_LIB") != ""){
   Sys.setenv(PROJ_LIB = "")
 }
 library(terra)
+landcover <- rast("data/landcover_4.tif")
+df_levels <- data.frame(id = 1:4, cover = c("settlement", "agriculture", "forest", "unproductive"))
+levels(landcover) <- df_levels
 ```
 
 # Raster analysis
 
 ## Summarizing rasters
+
+::: {.callout-tip appearance="minimal" collapse="true" title="If you start from here..."}
+Run the following code to load and create everything you'll need to run the examples in this section.
+```{r}
+#| eval: false
+library(terra)
+landcover <- rast("data/landcover_4.tif")
+df_levels <- data.frame(id = 1:4, cover = c("settlement", "agriculture", "forest", "unproductive"))
+levels(landcover) <- df_levels
+```
+:::
 
 For discrete rasters, you can easily get the frequency distribution of all the available categories.
 
