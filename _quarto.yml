@@ -8,6 +8,7 @@ book:
   chapters:
     - index.qmd
     - raster_intro.qmd
+    - raster_analysis.qmd
     - landscape_indices.qmd
     - more_help.qmd
   sidebar:
