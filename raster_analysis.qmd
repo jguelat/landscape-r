@@ -19,8 +19,6 @@ levels(landcover) <- df_levels
 
 # Raster analysis
 
-## Summarizing rasters
-
 ::: {.callout-tip appearance="minimal" collapse="true" title="If you start from here..."}
 Run the following code to load and create everything you'll need to run the examples in this section.
 ```{r}
@@ -31,6 +29,21 @@ df_levels <- data.frame(id = 1:4, cover = c("settlement", "agriculture", "forest
 levels(landcover) <- df_levels
 ```
 :::
+
+## Basic raster properties
+
+Using standard functions available in `terra`, we can easily get general information about our raster, such as the number of cells, the dimension, the extent or the spatial resolution.
+
+```{r}
+ncell(landcover)
+dim(landcover)
+ext(landcover)
+c(xmin(landcover), xmax(landcover), ymin(landcover), ymax(landcover))
+res(landcover)
+```
+
+
+## Summarizing rasters
 
 For discrete rasters, you can easily get the frequency distribution of all the available categories.
 
