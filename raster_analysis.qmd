@@ -1,0 +1,56 @@
+---
+toc: true
+toc-depth: 3
+toc-title: ""
+---
+
+```{r}
+#| echo: false
+#| output: false
+set.seed(55)
+if (.Platform$OS.type == "windows" && Sys.getenv("PROJ_LIB") != ""){
+  Sys.setenv(PROJ_LIB = "")
+}
+library(terra)
+```
+
+# Raster analysis
+
+## Summarizing rasters
+
+For discrete rasters, you can easily get the frequency distribution of all the available categories.
+
+```{r}
+freq(landcover)
+barplot(landcover)
+```
+
+
+## Raster binarization
+
+```{r}
+landcover_layers <- segregate(landcover)
+names(landcover_layers) <- c("settlement", "agriculture", "forest", "unproductive")
+plot(landcover_layers)
+```
+
+
+## Computing landcover proportions
+
+```{r}
+landcover_agg <- aggregate(landcover_layers, 10, fun = function(i) {sum(i) / 100})
+plot(landcover_agg)
+```
+
+Until now we saw examples of global, zonal and local analyses with raster data. Now we're going to dive in the beautiful world of focal analyses. Note that people doing data science and mathematics will usually use the word convolution instead. Focal means that we're not only considering the pixel value, but also the values of the neighboring pixels. The neighborhood is called kernel or moving window and is usually a square (like a 3x3 square, the focal pixel and its 8 neighbors) or a circle. Once the neighborhood is defined, we perform an aggregation of the pixel values (e.g. by summing or averaging) within the neighborhood and store the output as the new value for the focal cell, and then we move the window to the next pixel. The following figure shows a example using a 3x3 moving window and the minimum as the aggregating function.
+
+![](figures/04_focal_example.png)
+
+Note that the output raster will usually be smaller than the original one (if the moving window is a $m$x$n$ matrix, the output will have $(m-1)$ less rows and $(n-1)$ less columns). If you want a raster with the same size as the original, you'll need to ignore the NA values, hence the window will be smaller in the margins of the raster.`
+
+Focal analyses are really interesting to characterize the habitat of a site since you also get information about the neighboring areas. Using a discrete raster we can for example compute the number of pixels for each landcover classes in the neighborhood of each pixel. Note that the size of the moving window has to be an odd number.
+
+```{r}
+landcover_focal <- focal(landcover_layers, 5, fun = "sum")
+plot(landcover_focal)
+```

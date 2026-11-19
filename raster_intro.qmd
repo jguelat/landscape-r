@@ -45,10 +45,17 @@ To import a raster data set using `terra`, we're going to use the `rast()` funct
 The following raster is a typical land use/land cover dataset. It is an extract from the [Swiss Land Use Statistics](https://statistik.admin.ch/en/understanding-data-statistics/surveys/area){target="_blank"}, provided by the Federal Statistical Office. Note that `terra` is not recognizing automatically that we're processing a discrete raster. That's why we need to use the `as.factor()` function.
 
 ```{r}
-landcover <- rast("data/landcover.tif")
+landcover <- rast("data/landcover_4.tif")
 landcover
 landcover <- as.factor(landcover)
 plot(landcover)
+```
+
+```{r}
+df_levels <- data.frame(id = 1:4, cover = c("settlement", "agriculture", "forest", "unproductive"))
+levels(landcover) <- df_levels
+plot(landcover)
+cats(landcover)
 ```
 
 ```{r}
@@ -69,19 +76,3 @@ Exporting a raster data set is really easy thanks to the `writeRaster()` functio
 #| eval: false
 writeRaster(landcover, "export/landcover_export.tif")
 ```
-
-
-## Summarize rasters
-
-For discrete rasters, you can easily get the frequency distribution of all the available categories.
-
-```{r}
-freq(landcover)
-barplot(landcover)
-```
-
-
-## Binarize rasters
-
-
-## Landcover proportions aggregation vs.focal
