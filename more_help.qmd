@@ -4,7 +4,12 @@ toc-depth: 3
 toc-title: ""
 ---
 
-
 # More help
 
-Bla bla bla
+If you need more help, documentation, code examples, you should have a look at the `terra` documentation (<https://rspatial.org>{target="_blank"}) and the `landscapemetrics` website (<https://r-spatialecology.github.io/landscapemetrics/>{target="_blank"}).
+
+Jakub Nowosad, one the developers of `landscapemetrics` and the main developer of `motif`, wrote some interesting blog posts on this topic: <https://jakubnowosad.com/posts.html>{target="_blank"}.
+
+Paige Wirth, from the SILVIS Lab (University of Wisconsin–Madison), has a great video tutorial on landscape ecology indices and `landscapemetrics`: <https://www.youtube.com/watch?v=WdqLMaCesjM>{target="_blank"}.
+
+The FRAGSTATS documentation can also be interesting since it provides more information on several landscape ecology concepts and a complete description of all the available metrics: <https://www.fragstats.org/index.php/documentation>{target="_blank"}.
