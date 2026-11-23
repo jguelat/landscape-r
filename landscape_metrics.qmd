@@ -12,12 +12,70 @@ if (.Platform$OS.type == "windows" && Sys.getenv("PROJ_LIB") != ""){
   Sys.setenv(PROJ_LIB = "")
 }
 library(terra)
+library(dplyr)
+library(landscapemetrics)
+landscape_sempach <- rast("data/landcover_4.tif")
+df_levels <- data.frame(id = 1:4, cover = c("settlement", "agriculture", "forest", "unproductive"))
+levels(landscape_sempach) <- df_levels
 ```
 
-# Landscape indices
+# Landscape metrics
+
+::: {.callout-tip appearance="minimal" collapse="true" title="If you start from here..."}
+Run the following code to load and create everything you'll need to run the examples in this section.
+```{r}
+#| eval: false
+library(terra)
+landscape_sempach <- rast("data/landcover_4.tif")
+df_levels <- data.frame(id = 1:4, cover = c("settlement", "agriculture", "forest", "unproductive"))
+levels(landscape_sempach) <- df_levels
+```
+:::
 
 ## Introduction
 
 Patch/class/landscape
 Buffers with multiple sizes
 Focal indices
+
+```{r}
+#| eval: false
+library(dplyr)
+library(landscapemetrics)
+```
+```{r}
+
+landscape <- rast(landscape)
+plot(landscape)
+
+check_landscape(landscape)
+check_landscape(landscape_sempach)
+
+show_patches(landscape, directions = 4, labels = TRUE)
+# default
+show_patches(landscape, directions = 8, labels = TRUE)
+
+show_cores(landscape, class = c(1, 2))
+
+
+# All available metrics
+list_lsm()
+
+list_lsm(level = "class", type = "shape metric")
+
+#?lsm_p_area()
+
+# Patch area
+res <- lsm_p_area(landscape)
+res
+res[res$class == 2 & res$value > 0.005, "id"]
+
+
+# Several metrics at the same time
+calculate_lsm(landscape, what = c("lsm_c_pland", "lsm_l_ta", "lsm_l_te"), full_name = TRUE)
+calculate_lsm(landscape, type = "aggregation metric", level = c("patch", "landscape"), full_name = TRUE)
+
+metrics <- calculate_lsm(landscape, what = c("lsm_c_cai_mn", "lsm_c_area_mn", "lsm_c_pland", "lsm_c_ed"))
+calculate_correlation(metrics) # common to remove stuff with correlation 0.7 or higher
+```
+
