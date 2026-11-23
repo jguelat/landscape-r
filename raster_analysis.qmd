@@ -65,6 +65,15 @@ plot(landscape_sempach_layers)
 ## Computing landcover proportions
 
 ```{r}
+pts <- vect("POINT(2657271 1219752)", crs = "EPSG:2056")
+pts_buf <- buffer(pts, width = 5000)
+plot(landscape_sempach)
+plot(pts_buf, lwd = 3, border = "red", add = TRUE)
+landcover_tbl <- extract(landscape_sempach, pts_buf, fun = table)
+landcover_tbl
+```
+
+```{r}
 landscape_sempach_agg <- aggregate(landscape_sempach_layers, 10, fun = function(i) {sum(i) / 100})
 plot(landscape_sempach_agg)
 ```
