@@ -12,9 +12,9 @@ if (.Platform$OS.type == "windows" && Sys.getenv("PROJ_LIB") != ""){
   Sys.setenv(PROJ_LIB = "")
 }
 library(terra)
-landscape <- rast("data/landcover_4.tif")
+landscape_sempach <- rast("data/landcover_4.tif")
 df_levels <- data.frame(id = 1:4, cover = c("settlement", "agriculture", "forest", "unproductive"))
-levels(landscape) <- df_levels
+levels(landscape_sempach) <- df_levels
 ```
 
 # Raster analysis
@@ -24,9 +24,9 @@ Run the following code to load and create everything you'll need to run the exam
 ```{r}
 #| eval: false
 library(terra)
-landscape <- rast("data/landcover_4.tif")
+landscape_sempach <- rast("data/landcover_4.tif")
 df_levels <- data.frame(id = 1:4, cover = c("settlement", "agriculture", "forest", "unproductive"))
-levels(landscape) <- df_levels
+levels(landscape_sempach) <- df_levels
 ```
 :::
 
@@ -35,11 +35,11 @@ levels(landscape) <- df_levels
 Using standard functions available in `terra`, we can easily get general information about our raster, such as the number of cells, the dimension, the extent or the spatial resolution.
 
 ```{r}
-ncell(landscape)
-dim(landscape)
-ext(landscape)
-c(xmin(landscape), xmax(landscape), ymin(landscape), ymax(landscape))
-res(landscape)
+ncell(landscape_sempach)
+dim(landscape_sempach)
+ext(landscape_sempach)
+c(xmin(landscape_sempach), xmax(landscape_sempach), ymin(landscape_sempach), ymax(landscape_sempach))
+res(landscape_sempach)
 ```
 
 
@@ -48,25 +48,25 @@ res(landscape)
 For discrete rasters, you can easily get the frequency distribution of all the available categories.
 
 ```{r}
-freq(landscape)
-barplot(landscape)
+freq(landscape_sempach)
+barplot(landscape_sempach)
 ```
 
 
 ## Raster binarization
 
 ```{r}
-landscape_layers <- segregate(landscape)
-names(landscape_layers) <- c("settlement", "agriculture", "forest", "unproductive")
-plot(landscape_layers)
+landscape_sempach_layers <- segregate(landscape_sempach)
+names(landscape_sempach_layers) <- c("settlement", "agriculture", "forest", "unproductive")
+plot(landscape_sempach_layers)
 ```
 
 
 ## Computing landcover proportions
 
 ```{r}
-landscape_agg <- aggregate(landscape_layers, 10, fun = function(i) {sum(i) / 100})
-plot(landscape_agg)
+landscape_sempach_agg <- aggregate(landscape_sempach_layers, 10, fun = function(i) {sum(i) / 100})
+plot(landscape_sempach_agg)
 ```
 
 Until now we saw examples of global, zonal and local analyses with raster data. Now we're going to dive in the beautiful world of focal analyses. Note that people doing data science and mathematics will usually use the word convolution instead. Focal means that we're not only considering the pixel value, but also the values of the neighboring pixels. The neighborhood is called kernel or moving window and is usually a square (like a 3x3 square, the focal pixel and its 8 neighbors) or a circle. Once the neighborhood is defined, we perform an aggregation of the pixel values (e.g. by summing or averaging) within the neighborhood and store the output as the new value for the focal cell, and then we move the window to the next pixel. The following figure shows a example using a 3x3 moving window and the minimum as the aggregating function.
@@ -78,6 +78,6 @@ Note that the output raster will usually be smaller than the original one (if th
 Focal analyses are really interesting to characterize the habitat of a site since you also get information about the neighboring areas. Using a discrete raster we can for example compute the number of pixels for each landcover classes in the neighborhood of each pixel. Note that the size of the moving window has to be an odd number.
 
 ```{r}
-landscape_focal <- focal(landscape_layers, 5, fun = "sum")
-plot(landscape_focal)
+landscape_sempach_focal <- focal(landscape_sempach_layers, 5, fun = "sum")
+plot(landscape_sempach_focal)
 ```
