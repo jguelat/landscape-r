@@ -35,7 +35,7 @@ Understanding how organisms react to landscape and habitat structure is a key pr
 
 The first version of this tutorial was created for a course given at the [Swiss Ornithological Institute](https://www.vogelwarte.ch/en){target="_blank"} in 2026. Researchers and students in ecology were the original audience but the whole material can be used by anybody who wants to learn more about how to perform these techniques.
 
-None of this could have been written without the incredible work done by the R-spatial community. I'd especially like to thank all the software developers who created and are maintaining the R software, the R packages and the open-source libraries used in these packages!
+None of this could have been written without the incredible work done by the R-spatial community. I'd especially like to thank all the software developers who created and are maintaining the R software, the R packages and the open-source libraries used in these packages! The content of this tutorial was also heavily inspired by the the `landscapemetrics` and `motif` official documentation. Thanks a lot to the authors.
 
 
 # Getting ready {.unnumbered}
