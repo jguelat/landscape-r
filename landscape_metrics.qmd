@@ -51,6 +51,9 @@ plot(landscape)
 check_landscape(landscape)
 check_landscape(landscape_sempach)
 
+crs(landscape) <- "EPSG:2056"
+check_landscape(landscape)
+
 show_patches(landscape, directions = 4, labels = TRUE)
 # default
 show_patches(landscape, directions = 8, labels = TRUE)
@@ -70,12 +73,115 @@ res <- lsm_p_area(landscape)
 res
 res[res$class == 2 & res$value > 0.005, "id"]
 
+# Visualize results
+show_lsm(landscape, what = "lsm_p_area")
+
+# Save result as raster
+res <- spatialize_lsm(landscape, what = "lsm_p_area")
+res[[1]][[1]]
 
 # Several metrics at the same time
 calculate_lsm(landscape, what = c("lsm_c_pland", "lsm_l_ta", "lsm_l_te"), full_name = TRUE)
 calculate_lsm(landscape, type = "aggregation metric", level = c("patch", "landscape"), full_name = TRUE)
 
-metrics <- calculate_lsm(landscape, what = c("lsm_c_cai_mn", "lsm_c_area_mn", "lsm_c_pland", "lsm_c_ed"))
-calculate_correlation(metrics) # common to remove stuff with correlation 0.7 or higher
+metrics <- calculate_lsm(landscape_sempach, what = c("lsm_c_cai_mn", "lsm_c_area_mn", "lsm_c_pland", "lsm_c_ed"))
+calculate_correlation(metrics, diag = FALSE)
+show_correlation(metrics) # common to remove stuff with correlation 0.7 or higher
+
+
+# Extract (only for patch metrics)
+pts <- matrix(c(10, 22, 22, 5, 26, 20), ncol = 2, byrow = TRUE)
+pts <- vect(pts, crs = "EPSG:2056")
+plot(landscape)
+plot(pts, col = "red", cex = 2, add = TRUE)
+extract_lsm(landscape, y = pts, what = "lsm_p_area")
+
+# Sample landscape metrics (y can be polygons, too)
+sample_lsm(landscape, y = pts, size = 10, shape = "circle", what = c("lsm_l_msidi", "lsm_l_pr", "lsm_l_shei"))
+
+# hide code
+plot(landscape, ext = ext(landscape) + 6, box = FALSE, axes = FALSE, legend = FALSE)
+plot(buffer(pts, width = 10), cex = 3, border = "red", add = TRUE)
+plot(pts, col = "red", cex = 2, add = TRUE)
+
+# Sample in several buffers
+# creating buffers of 5 and 10 meters 
+sizes = c(5, 10)
+
+# calculating landscape metric for square buffers
+library(purrr)
+sizes |> 
+  set_names() |> 
+  map_dfr(~ sample_lsm(landscape, y = pts, what = "lsm_l_msidi", size = .), .id = "buffer_size")
+
+
+# Moving window (only for landscape metrics)
+win <- matrix(1, nrow = 3, ncol = 3)
+win
+
+res <- window_lsm(landscape, window = win, what = c("lsm_l_msidi", "lsm_l_pr", "lsm_l_shei"))
+res
+res <- rast(res[[1]])
+plot(res)
+
+
+
+library(motif)
+library(sf)
+landcover <- rast(system.file("raster/landcover2015.tif", package = "motif"))
+
+landcover_comp <- lsp_signature(landcover, type = "composition", threshold = 1, normalization = "none")
+landcover_comp
+landcover_comp$signature
+
+landcover_coma <- lsp_signature(landcover, type = "coma", window = 200)
+landcover_coma
+
+# Plot, hide code
+stars200 <- lsp_add_sf(landcover, window = 200)
+plot(landcover)
+plot(st_geometry(stars200), add = TRUE)
+
+
+# Search similar
+extent <- ext(c(xmin = 238000, xmax = 268000, ymin = -819814, ymax = -789814))
+landcover_cropped <- crop(landcover, extent)
+plot(landcover_cropped)
+
+search_1 <- lsp_search(landcover_cropped, landcover, type = "cove", dist_fun = "jensen-shannon", window = 100, threshold = 1)
+search_1
+plot(search_1["dist"], breaks = c(0, 0.001, 0.01, 0.1, 1.01))
+search_1$id[which(search_1$dist < 0.001)]
+search_1_690 <- lsp_extract(landcover, window = 100, id = 690)
+plot(search_1_690)
+
+
+# Compare (find areas with the largest changes of land cover spatial patterns)
+landcover_old <- rast(system.file("raster/landcover2001.tif", package = "motif"))
+compare_1 <- lsp_compare(landcover, landcover_old, type = "cove", dist_fun = "jensen-shannon", window = 100, threshold = 0.9)
+plot(compare_1["dist"],breaks=c(0, 0.001, 0.01, 0.1, 1.01))
+compare_1_max = max(compare_1$dist, na.rm = TRUE)
+unique(compare_1$id[which(compare_1$dist == compare_1_max)])
+compare_1_2036 = lsp_extract(c(landcover_old, landcover), window = 100, id = 2036)
+plot(compare_1_2036[[1]], main = "2001")
+plot(compare_1_2036[[2]], main = "2015")
+
+
+
+extent <- ext(c(xmin = 600000, xmax = 800000, ymin = -1100000, ymax = -800000))
+test <- crop(landcover, extent)
+test_old <- crop(landcover_old, extent)
+
+win <- matrix(1, nrow = 5, ncol = 5)
+# relative mutual information (relmutinf) metric, which quantifies the clumpiness of the landscape – the larger the value, the more clumped the landscape is
+#new <- window_lsm(test, window = win, what = "lsm_l_relmutinf")
+#old <- window_lsm(test_old, window = win, what = "lsm_l_relmutinf")
+#diffs <- old[[1]][[1]] - new[[1]][[1]]
+# Areas where the clumpiness of the landscape has increased (positive values) and decreased (negative values)
+#plot(diffs)
 ```
+
+One of the reason to start landscapemetrics was also to have a collection of metrics that are not included in FRAGSTATS. This vignette will highlight them and provide references for further reading on them. Information-theoretical framework can be applied to derive four metrics of landscape complexity: Marginal entropy [H(x)], Conditional entropy [H(y|x)], Joint entropy [H(x, y)], and Mutual information [I(y,x)]. https://r-spatialecology.github.io/landscapemetrics/articles/new_metrics.html
+
+sample_lsm: percentage_inside: the size of the actual sampled landscape in %. It is not always 100% due to two reasons: (i) clipping raster cells using a buffer not directly intersecting a raster cell center lead to inaccuracies and (ii) sample plots can exceed the landscape boundary.
 
