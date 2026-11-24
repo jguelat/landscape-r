@@ -49,7 +49,7 @@ Please also update to the latest version of R, otherwise you may get packages th
 ```{r}
 #| echo: false
 #| output: asis
-packages <- c("terra", "landscapemetrics", "motif")
+packages <- c("terra", "sf", "stars", "landscapemetrics", "motif")
 
 cat("``` r", paste0('install.packages(','"', packages, '"', ')'), "```", sep = "\n")
 ```
