@@ -6,12 +6,12 @@ toc-title: ""
 
 # More help
 
-If you need more help, documentation, code examples, you should have a look at the `terra` documentation (<https://rspatial.org>{target="_blank"}) and the `landscapemetrics` website (<https://r-spatialecology.github.io/landscapemetrics/>{target="_blank"}).
+If you need a more general introduction to GIS and spatial data processing with R, check my tutorial available at <https://jguelat.github.io/spatial-r/>{target="_blank"}. Actually, I'm planning to include the material on landscape metrics in the main tutorial (after some polishing). The book Geocomputation with R is absolutely amazing and available for free (legally) on the web: <https://r.geocompx.org>{target="_blank"}. The book Spatial Data Science also provides some advanced information on spatial data: <https://r-spatial.org/book/>{target="_blank"}.
 
-The `lanscapemetrics` paper is also providing plenty of useful information: <https://doi.org/10.1111/ecog.04617>{target="_blank"}.
+The FRAGSTATS documentation provides plenty of information on several landscape ecology concepts and a complete description of all the available metrics: <https://www.fragstats.org/index.php/documentation>{target="_blank"}.
+
+If you need more help, documentation or code examples for `landscapemetrics`, check its website (<https://r-spatialecology.github.io/landscapemetrics/>{target="_blank"}) and the associated paper <https://doi.org/10.1111/ecog.04617>{target="_blank"}. Paige Wirth, from the SILVIS Lab (University of Wisconsin–Madison), has a great video tutorial on landscape ecology indices and `landscapemetrics`: <https://www.youtube.com/watch?v=WdqLMaCesjM>{target="_blank"}.
+
+If you like `motif`, the website has additional examples. The associated paper has a lot of information, too: <https://doi.org/10.1007/s10980-020-01135-0>{target="_blank"}.
 
 Jakub Nowosad, one the developers of `landscapemetrics` and the main developer of `motif`, wrote some interesting blog posts on this topic: <https://jakubnowosad.com/posts.html>{target="_blank"}.
-
-Paige Wirth, from the SILVIS Lab (University of Wisconsin–Madison), has a great video tutorial on landscape ecology indices and `landscapemetrics`: <https://www.youtube.com/watch?v=WdqLMaCesjM>{target="_blank"}.
-
-The FRAGSTATS documentation can also be interesting since it provides more information on several landscape ecology concepts and a complete description of all the available metrics: <https://www.fragstats.org/index.php/documentation>{target="_blank"}.
