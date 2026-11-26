@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>4&nbsp; More help – Characterizing landscapes using landscape ecology indices</title>
+<title>4&nbsp; More help – Introduction to landscape metrics</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -36,7 +36,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./landscape_indices.html" rel="prev">
+<link href="./landscape_metrics.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -103,7 +103,7 @@ ul.task-list li input[type="checkbox"] {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">Characterizing landscapes using landscape ecology indices</a> 
+      <a href="./">Introduction to landscape metrics</a> 
         <div class="sidebar-tools-main">
     <a href="https://github.com/jguelat/landscape-r" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
 </div>
@@ -136,8 +136,8 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./landscape_indices.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Landscape indices</span></span></a>
+  <a href="./landscape_metrics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Landscape metrics</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -176,11 +176,11 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>If you need more help, documentation, code examples, you should have a look at the <code>terra</code> documentation (<a href="https://rspatial.org" target="_blank">https://rspatial.org</a>) and the <code>landscapemetrics</code> website (<a href="https://r-spatialecology.github.io/landscapemetrics/" target="_blank">https://r-spatialecology.github.io/landscapemetrics/</a>).</p>
-<p>The <code>lanscapemetrics</code> paper is also providing plenty of useful information: <a href="https://doi.org/10.1111/ecog.04617" target="_blank">https://doi.org/10.1111/ecog.04617</a>.</p>
+<p>If you need a more general introduction to GIS and spatial data processing with R, check my tutorial available at <a href="https://jguelat.github.io/spatial-r/" target="_blank">https://jguelat.github.io/spatial-r/</a>. Actually, I’m planning to include the material on landscape metrics in the main tutorial (after some polishing). The book Geocomputation with R is absolutely amazing and available for free (legally) on the web: <a href="https://r.geocompx.org" target="_blank">https://r.geocompx.org</a>. The book Spatial Data Science also provides some advanced information on spatial data: <a href="https://r-spatial.org/book/" target="_blank">https://r-spatial.org/book/</a>.</p>
+<p>The FRAGSTATS documentation provides plenty of information on several landscape ecology concepts and a complete description of all the available metrics: <a href="https://www.fragstats.org/index.php/documentation" target="_blank">https://www.fragstats.org/index.php/documentation</a>.</p>
+<p>If you need more help, documentation or code examples for <code>landscapemetrics</code>, check its website (<a href="https://r-spatialecology.github.io/landscapemetrics/" target="_blank">https://r-spatialecology.github.io/landscapemetrics/</a>) and the associated paper <a href="https://doi.org/10.1111/ecog.04617" target="_blank">https://doi.org/10.1111/ecog.04617</a>. Paige Wirth, from the SILVIS Lab (University of Wisconsin–Madison), has a great video tutorial on landscape ecology indices and <code>landscapemetrics</code>: <a href="https://www.youtube.com/watch?v=WdqLMaCesjM" target="_blank">https://www.youtube.com/watch?v=WdqLMaCesjM</a>.</p>
+<p>If you like <code>motif</code>, the website has additional examples. The associated paper has a lot of information, too: <a href="https://doi.org/10.1007/s10980-020-01135-0" target="_blank">https://doi.org/10.1007/s10980-020-01135-0</a>.</p>
 <p>Jakub Nowosad, one the developers of <code>landscapemetrics</code> and the main developer of <code>motif</code>, wrote some interesting blog posts on this topic: <a href="https://jakubnowosad.com/posts.html" target="_blank">https://jakubnowosad.com/posts.html</a>.</p>
-<p>Paige Wirth, from the SILVIS Lab (University of Wisconsin–Madison), has a great video tutorial on landscape ecology indices and <code>landscapemetrics</code>: <a href="https://www.youtube.com/watch?v=WdqLMaCesjM" target="_blank">https://www.youtube.com/watch?v=WdqLMaCesjM</a>.</p>
-<p>The FRAGSTATS documentation can also be interesting since it provides more information on several landscape ecology concepts and a complete description of all the available metrics: <a href="https://www.fragstats.org/index.php/documentation" target="_blank">https://www.fragstats.org/index.php/documentation</a>.</p>
 
 
 
@@ -587,8 +587,8 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./landscape_indices.html" class="pagination-link" aria-label="Landscape indices">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Landscape indices</span></span>
+      <a href="./landscape_metrics.html" class="pagination-link" aria-label="Landscape metrics">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Landscape metrics</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
