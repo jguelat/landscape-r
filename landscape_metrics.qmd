@@ -12,8 +12,8 @@ if (.Platform$OS.type == "windows" && Sys.getenv("PROJ_LIB") != ""){
   Sys.setenv(PROJ_LIB = "")
 }
 library(terra)
-library(dplyr)
 library(landscapemetrics)
+library(dplyr)
 landscape_sempach <- rast("data/landcover_4.tif")
 df_levels <- data.frame(id = 1:4, cover = c("settlement", "agriculture", "forest", "unproductive"))
 levels(landscape_sempach) <- df_levels
@@ -34,52 +34,120 @@ levels(landscape_sempach) <- df_levels
 
 ## Introduction
 
-Patch/class/landscape
-Buffers with multiple sizes
-Focal indices
+We first need to load the `landscapemetrics` package. This is the package we are going to use to compute landscape indices. Since the standard output of `landscapemetrics` is a tibble, we are also loading the `dplyr` package. This is not strictly needed since tibbles are also data frames, but the display will be a bit nicer.
 
 ```{r}
 #| eval: false
-library(dplyr)
 library(landscapemetrics)
+library(dplyr)
 ```
-```{r}
 
+Since the computation time of some indices can be quite high on large landscapes, we are going to use a small simulated landscape provided by the package authors. It's a 30x30 square landscape with 3 land cover categories.
+
+```{r}
 landscape <- rast(landscape)
 plot(landscape)
+```
 
+Before computing metrics, we first need to check that our input raster data is fulfilling all the requirements of `landscapemetrics`:
+
+* The input raster is categorical (with a reasonable amount of categories)
+* Categories are encoded using integer values
+* The landscape uses a projected coordinate reference system (CRS)
+* The CRS uses meters as a distance unit
+
+We thus check our simulated landscape. As a comparison, we also check the landscape we were using in the previous sections.
+
+```{r}
 check_landscape(landscape)
 check_landscape(landscape_sempach)
+```
 
+We get a warning for the simulated data set since the CRS is not defined and `landscapemetrics` cannot know if the data is projected and/or using meters as a distance unit. To remove the warning, we will assign a projected CRS (we'll use the one used in Switzerland) to the raster. This is not a problem here since we don't care about the true location of this raster. However, in a real analysis, you should always check that your data has the appropriate CRS.
+
+```{r}
 crs(landscape) <- "EPSG:2056"
 check_landscape(landscape)
+```
 
-show_patches(landscape, directions = 4, labels = TRUE)
-# default
-show_patches(landscape, directions = 8, labels = TRUE)
+You can use the `list_lsm()` function to get a list of all the metrics provided by `landscapemetrics`. Using the `level` and `type` arguments, it is also possible to get only the metrics for a specific level (patch, class or landscape) or a specific type of metrics.
 
-show_cores(landscape, class = c(1, 2))
-
-
-# All available metrics
+```{r}
 list_lsm()
-
 list_lsm(level = "class", type = "shape metric")
+```
 
-#?lsm_p_area()
+The last column shows name of the function used to compute the metrics. You can access the documentation of every metric with the `help()` (or `?`) function.
 
-# Patch area
+```{r}
+#| eval: false
+help(lsm_p_area)
+?lsm_p_area
+```
+
+
+## Patch metrics
+
+A patch is an area of continuous land cover, and this continuity is defined by the numbers of connected neighbors. Most (maybe even all, I didn't check) functions of `landscapmetrics` use 8 neighbors (queen's case) but you can choose to use only 4 neighbors (rook's case). This can have a strong influence on the number of delineated patches. The `show_patches()` function allows us to visualize the patches. Let's use it with the 2 different settings.
+
+```{r}
+show_patches(landscape, directions = 4, labels = TRUE)
+show_patches(landscape, directions = 8, labels = TRUE)
+```
+
+When you compute a patch metric, you'll get a value for every patch. This can be quite slow for large landscapes. As an example, let's compute the area of each patch. This is done with the `lsm_p_area()` function.
+
+```{r}
 res <- lsm_p_area(landscape)
 res
+```
+
+We get all the areas in hectares (check the help file if you want to know the units) and the output is stored in a tibble. We can thus use the usual data frame techniques to extract values, for example to get the IDs of all the patches with an area bigger than 0.005 ha.
+
+```{r}
 res[res$class == 2 & res$value > 0.005, "id"]
+```
 
-# Visualize results
+Some species don't really like edge effects and thus avoid staying close to edges of a patch. In this case, the area of the patch is maybe not the best metric to use. Fortunately, there's another metric that computes the core area of each patch.
+
+```{r}
+res <- lsm_p_cai(landscape)
+res
+```
+
+Let's visualize the core areas of the patches for all three classes separately using the `show_cores()` function.
+
+```{r}
+show_cores(landscape, class = "all")
+```
+
+Some functions, like `lsm_p_cai()` have additional arguments. For the core area index, we can specify the width of the edge using the `edge_depth` argument. The distance is specified in cell numbers.
+
+```{r}
+res <- lsm_p_cai(landscape, edge_depth = 2)
+res
+show_cores(landscape, class = "all", edge_depth = 2)
+```
+
+It is sometimes useful to show the values of the patch metrics on a map. This can also help to understand the results of more complex metrics. The `show_lsm()` function creates such a map in which the value of each pixel is equal to the associated patch metric.
+
+```{r}
 show_lsm(landscape, what = "lsm_p_area")
+```
 
-# Save result as raster
+It is also possible to save this map as a `SpatRaster` object using the `spatialize_lsm()` function. The raster will be stored in a nested list. Only patch metrics are allowed.
+
+```{r}
 res <- spatialize_lsm(landscape, what = "lsm_p_area")
 res[[1]][[1]]
+```
 
+
+## Class metrics
+## Landscape metrics
+## Computing several indices
+
+```{r}
 # Several metrics at the same time
 calculate_lsm(landscape, what = c("lsm_c_pland", "lsm_l_ta", "lsm_l_te"), full_name = TRUE)
 calculate_lsm(landscape, type = "aggregation metric", level = c("patch", "landscape"), full_name = TRUE)
@@ -87,8 +155,12 @@ calculate_lsm(landscape, type = "aggregation metric", level = c("patch", "landsc
 metrics <- calculate_lsm(landscape_sempach, what = c("lsm_c_cai_mn", "lsm_c_area_mn", "lsm_c_pland", "lsm_c_ed"))
 calculate_correlation(metrics, diag = FALSE)
 show_correlation(metrics) # common to remove stuff with correlation 0.7 or higher
+```
 
 
+## Extracting and sampling indices
+
+```{r}
 # Extract (only for patch metrics)
 pts <- matrix(c(10, 22, 22, 5, 26, 20), ncol = 2, byrow = TRUE)
 pts <- vect(pts, crs = "EPSG:2056")
@@ -113,8 +185,12 @@ library(purrr)
 sizes |> 
   set_names() |> 
   map_dfr(~ sample_lsm(landscape, y = pts, what = "lsm_l_msidi", size = .), .id = "buffer_size")
+```
 
 
+## Focal analysis
+
+```{r}
 # Moving window (only for landscape metrics)
 win <- matrix(1, nrow = 3, ncol = 3)
 win
@@ -123,12 +199,32 @@ res <- window_lsm(landscape, window = win, what = c("lsm_l_msidi", "lsm_l_pr", "
 res
 res <- rast(res[[1]])
 plot(res)
+```
+```{r}
+landcover <- rast(system.file("raster/landcover2015.tif", package = "motif"))
+landcover_old <- rast(system.file("raster/landcover2001.tif", package = "motif"))
+
+extent <- ext(c(xmin = 600000, xmax = 800000, ymin = -1100000, ymax = -800000))
+land_new <- crop(landcover, extent)
+land_old <- crop(landcover_old, extent)
+```
+```{r}
+#| eval: false
+win <- matrix(1, nrow = 5, ncol = 5)
+# relative mutual information (relmutinf) metric, which quantifies the clumpiness of the landscape – the larger the value, the more clumped the landscape is
+new <- window_lsm(test, window = win, what = "lsm_l_relmutinf")
+old <- window_lsm(test_old, window = win, what = "lsm_l_relmutinf")
+diffs <- old[[1]][[1]] - new[[1]][[1]]
+# Areas where the clumpiness of the landscape has increased (positive values) and decreased (negative values)
+plot(diffs)
+```
 
 
+## Motif
 
+```{r}
 library(motif)
 library(sf)
-landcover <- rast(system.file("raster/landcover2015.tif", package = "motif"))
 
 landcover_comp <- lsp_signature(landcover, type = "composition", threshold = 1, normalization = "none")
 landcover_comp
@@ -142,7 +238,6 @@ stars200 <- lsp_add_sf(landcover, window = 200)
 plot(landcover)
 plot(st_geometry(stars200), add = TRUE)
 
-
 # Search similar
 extent <- ext(c(xmin = 238000, xmax = 268000, ymin = -819814, ymax = -789814))
 landcover_cropped <- crop(landcover, extent)
@@ -155,9 +250,7 @@ search_1$id[which(search_1$dist < 0.001)]
 search_1_690 <- lsp_extract(landcover, window = 100, id = 690)
 plot(search_1_690)
 
-
 # Compare (find areas with the largest changes of land cover spatial patterns)
-landcover_old <- rast(system.file("raster/landcover2001.tif", package = "motif"))
 compare_1 <- lsp_compare(landcover, landcover_old, type = "cove", dist_fun = "jensen-shannon", window = 100, threshold = 0.9)
 plot(compare_1["dist"],breaks=c(0, 0.001, 0.01, 0.1, 1.01))
 compare_1_max = max(compare_1$dist, na.rm = TRUE)
@@ -165,20 +258,6 @@ unique(compare_1$id[which(compare_1$dist == compare_1_max)])
 compare_1_2036 = lsp_extract(c(landcover_old, landcover), window = 100, id = 2036)
 plot(compare_1_2036[[1]], main = "2001")
 plot(compare_1_2036[[2]], main = "2015")
-
-
-
-extent <- ext(c(xmin = 600000, xmax = 800000, ymin = -1100000, ymax = -800000))
-test <- crop(landcover, extent)
-test_old <- crop(landcover_old, extent)
-
-win <- matrix(1, nrow = 5, ncol = 5)
-# relative mutual information (relmutinf) metric, which quantifies the clumpiness of the landscape – the larger the value, the more clumped the landscape is
-#new <- window_lsm(test, window = win, what = "lsm_l_relmutinf")
-#old <- window_lsm(test_old, window = win, what = "lsm_l_relmutinf")
-#diffs <- old[[1]][[1]] - new[[1]][[1]]
-# Areas where the clumpiness of the landscape has increased (positive values) and decreased (negative values)
-#plot(diffs)
 ```
 
 One of the reason to start landscapemetrics was also to have a collection of metrics that are not included in FRAGSTATS. This vignette will highlight them and provide references for further reading on them. Information-theoretical framework can be applied to derive four metrics of landscape complexity: Marginal entropy [H(x)], Conditional entropy [H(y|x)], Joint entropy [H(x, y)], and Mutual information [I(y,x)]. https://r-spatialecology.github.io/landscapemetrics/articles/new_metrics.html
