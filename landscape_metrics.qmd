@@ -144,15 +144,76 @@ res[[1]][[1]]
 
 
 ## Class metrics
+
+Class metrics put the focus on the different types of land cover. They're either directly based on the spatial structure of the classes or based on some statistical summary of the patch metrics distributions for each class. We can for example compute the proportions of the landscape that fall into each class using the `lsm_c_pland()` function.
+
+```{r}
+lsm_c_pland(landscape)
+```
+
+If we are more interested in the effect of edges, we can compute the edge density index with the `lsm_c_ed()` function. This index shows how many edge units of a given class are present per hectare of landscape.
+
+```{r}
+lsm_c_ed(landscape)
+```
+
+The following metric, the mean of perimeter-area ratio (`lsm_c_para_mn()`), is an example where we use a statistical summary of a patch metric distribution for each class. The patch metric is the so-called perimeter-area ratio. The ratio gets larger as the shape complexity of the patches increases. The metric is first computed for each patch and then averaged using the arithmetical mean.
+
+```{r}
+lsm_c_para_mn(landscape)
+```
+
+If we are more interested in the variability of the patch metric within each class, we can for example use the standard deviation instead of the mean.
+
+```{r}
+lsm_c_para_sd(landscape)
+```
+
+The `landscapemetrics` package offers functions to compute the mean, standard deviation and coefficient of variation of all the patch metrics. If you need another distribution statistic (e.g., median), you can easily compute the desired metric for each patch and then summarize the metric distribution per class using the function you need.
+
+
 ## Landscape metrics
+
+```{r}
+land_augusta <- rast(augusta_nlcd)
+extent1 <- ext(c(xmin = xmin(land_augusta), xmax = xmax(land_augusta), ymin = ymin(land_augusta), ymax = 1253415))
+extent2 <- ext(c(xmin = xmin(land_augusta), xmax = xmax(land_augusta), ymin = 1253415, ymax = ymax(land_augusta)))
+land1 <- crop(land_augusta, extent1)
+land2 <- crop(land_augusta, extent2)
+```
+
+Let's plot the two landscapes.
+
+```{r}
+par(mfrow = c(2, 1))
+plot(land1, legend = FALSE)
+plot(land2, legend = FALSE)
+```
+
+Shannon diversity index: lsm_l_shdi(), value of 0 when there's only a single patch in the landscape. If 2 landscapes have the same number of classes and one of them has a higher index, then we know this landscape has classes that are more evenly distributed.
+
+```{r}
+lsm_l_shdi(land1)
+lsm_l_shdi(land2)
+```
+
+Contagion: lsm_l_contag (probability of two random cells belonging to the same class. Contagion is affected by both the dispersion and interspersion of classes. Shows how clumpy the landscape is, or how connected similar land cover types are across the area of interest). Close to 0 = different types are highly mixed and dispersed (fragmentation), close to 100 = opposite
+
+```{r}
+lsm_l_contag(land1)
+lsm_l_contag(land2)
+```
+
+
 ## Computing several indices
 
 ```{r}
+#| fig-width: 10
 # Several metrics at the same time
 calculate_lsm(landscape, what = c("lsm_c_pland", "lsm_l_ta", "lsm_l_te"), full_name = TRUE)
 calculate_lsm(landscape, type = "aggregation metric", level = c("patch", "landscape"), full_name = TRUE)
 
-metrics <- calculate_lsm(landscape_sempach, what = c("lsm_c_cai_mn", "lsm_c_area_mn", "lsm_c_pland", "lsm_c_ed"))
+metrics <- calculate_lsm(landscape, what = c("patch", "class"))
 calculate_correlation(metrics, diag = FALSE)
 show_correlation(metrics) # common to remove stuff with correlation 0.7 or higher
 ```
